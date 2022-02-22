@@ -1,16 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 import React from 'react'
 
-export default function Park({data}) {
-  if (data)
+export default function Park({parkInfo}) {
+  if (parkInfo)
     return (
       <>
         <h1>Data has loaded</h1>
-        <h2>{data.name}</h2>
-        <p>{data.description}</p>
+        <h2>{parkInfo.name}</h2>
+        <p>{parkInfo.description}</p>
         <img
-          src={data?.images[0].url}
-          alt={data?.images[0].altText}
+          src={parkInfo?.images[0].url}
+          alt={parkInfo?.images[0].altText}
           style={{width: '200px'}}
         />
       </>
@@ -30,11 +30,11 @@ export async function getStaticProps({params}) {
   const URL = 'https://developer.nps.gov/api/v1/'
 
   // Set data to null to handle errors
-  let data = null
+  let parkInfo = null
 
   try {
     // Call API Data for /PARK
-    const res = await fetch(
+    const parkData = await fetch(
       `${URL}parks?parkCode=${params?.parkCode}&limit=465&api_key=${process.env.NPS_API_KEY}`,
       {
         method: 'GET',
@@ -45,18 +45,18 @@ export async function getStaticProps({params}) {
       }
     )
 
-    data = await res.json()
-    data = data.data[0]
-    data = {
-      name: data.fullName,
-      description: data.description,
-      images: data.images,
+    parkInfo = await parkData.json()
+    parkInfo = parkInfo.data[0]
+    parkInfo = {
+      name: parkInfo.fullName,
+      description: parkInfo.description,
+      images: parkInfo.images,
     }
   } catch (err) {}
 
   return {
     props: {
-      data,
+      parkInfo,
     },
   }
 }
